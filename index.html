@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+  <meta name="description" content="EduReach - Offline-first education platform for rural communities">
+  <meta name="theme-color" content="#2E7D32">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="EduReach">
+  
+  <!-- Preconnect for faster API calls when online -->
+  <link rel="preconnect" href="https://api.edureach.app" crossorigin>
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="/manifest.json">
+  
+  <!-- Icons for iOS -->
+  <link rel="apple-touch-icon" href="/assets/icons/icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/icon-192x192.png">
+  
+  <title>EduReach - Student Dashboard</title>
+  
+  <style>
+    /* Critical CSS - Inline for First Paint Performance */
+    
+    /* Reset & Base Styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    :root {
+      /* High-contrast color palette for rural sunlight readability */
+      --primary: #2E7D32;
+      --primary-dark: #1B5E20;
+      --primary-light: #4CAF50;
+      --text-primary: #212121;
+      --text-secondary: #757575;
+      --background: #FFFFFF;
+      --surface: #F5F5F5;
+      --error: #D32F2F;
+      --border: #E0E0E0;
+      
+      /* Typography - Large for low-literacy users */
+      --font-base: 16px;
+      --font-large: 20px;
+      --font-xlarge: 24px;
+      
+      /* Spacing */
+      --spacing-xs: 4px;
+      --spacing-sm: 8px;
+      --spacing-md: 16px;
+      --spacing-lg: 24px;
+      --spacing-xl: 32px;
+      
+      /* Touch targets - Minimum 48px for accessibility */
+      --touch-target: 48px;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      font-size: var(--font-base);
+      line-height: 1.6;
+      color: var(--text-primary);
+      background-color: var(--background);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      
+      /* Optimize for low-end devices */
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+    }
+    
+    /* Header */
+    .header {
+      background-color: var(--primary);
+      color: white;
+      padding: var(--spacing-md);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .app-title {
+      font-size: var(--font-xlarge);
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+    
+    .connection-status {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-xs);
+      font-size: 14px;
+    }
+    
+    .status-indicator {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: #FFC107; /* Amber for offline */
+      animation: pulse 2s infinite;
+    }
+    
+    .status-indicator.online {
+      background-color: #4CAF50;
+      animation: none;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      padding: var(--spacing-lg) var(--spacing-md);
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+    }
+    
+    .dashboard-section {
+      background-color: var(--surface);
+      border-radius: 12px;
+      padding: var(--spacing-lg);
+      margin-bottom: var(--spacing-lg);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+    }
+    
+    .section-title {
+      font-size: var(--font-large);
+      font-weight: 600;
+      margin-bottom: var(--spacing-md);
+      color: var(--primary-dark);
+    }
+    
+    .placeholder-text {
+      color: var(--text-secondary);
+      text-align: center;
+      padding: var(--spacing-xl) var(--spacing-md);
+    }
+    
+    /* Footer Navigation */
+    .footer-nav {
+      background-color: white;
+      border-top: 1px solid var(--border);
+      position: sticky;
+      bottom: 0;
+      z-index: 100;
+      box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .nav-container {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: var(--spacing-xs) 0;
+    }
+    
+    .nav-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: var(--spacing-sm);
+      min-height: var(--touch-target);
+      text-decoration: none;
+      color: var(--text-secondary);
+      transition: color 0.2s;
+      cursor: pointer;
+      border: none;
+      background: none;
+      font-size: 12px;
+    }
+    
+    .nav-item:active {
+      background-color: rgba(0, 0, 0, 0.05);
+    }
+    
+    .nav-item.active {
+      color: var(--primary);
+      font-weight: 600;
+    }
+    
+    .nav-icon {
+      width: 24px;
+      height: 24px;
+      margin-bottom: var(--spacing-xs);
+    }
+    
+    /* Installation Banner */
+    .install-banner {
+      background-color: var(--primary-light);
+      color: white;
+      padding: var(--spacing-md);
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--spacing-md);
+    }
+    
+    .install-banner.show {
+      display: flex;
+    }
+    
+    .install-button {
+      background-color: white;
+      color: var(--primary);
+      border: none;
+      padding: var(--spacing-sm) var(--spacing-md);
+      border-radius: 8px;
+      font-weight: 600;
+      min-height: 40px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    
+    .install-button:active {
+      background-color: var(--surface);
+    }
+    
+    /* Loading State */
+    .loading {
+      text-align: center;
+      padding: var(--spacing-xl);
+      color: var(--text-secondary);
+    }
+    
+    /* Accessibility: Focus visible */
+    *:focus-visible {
+      outline: 3px solid var(--primary);
+      outline-offset: 2px;
+    }
+    
+    /* Print styles */
+    @media print {
+      .header, .footer-nav, .install-banner {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  
+  <!-- Installation Banner -->
+  <div class="install-banner" id="installBanner">
+    <span>Install EduReach for offline access</span>
+    <button class="install-button" id="installButton">Install App</button>
+  </div>
+  
+  <!-- Header -->
+  <header class="header">
+    <div class="header-content">
+      <h1 class="app-title">EduReach</h1>
+      <div class="connection-status">
+        <div class="status-indicator" id="statusIndicator"></div>
+        <span id="statusText">Offline</span>
+      </div>
+    </div>
+  </header>
+  
+  <!-- Main Content -->
+  <main class="main-content">
+    <section class="dashboard-section">
+      <h2 class="section-title">My Courses</h2>
+      <div class="placeholder-text" id="coursesContent">
+        <p>Loading courses...</p>
+      </div>
+    </section>
+    
+    <section class="dashboard-section">
+      <h2 class="section-title">Recent Activity</h2>
+      <div class="placeholder-text" id="activityContent">
+        <p>No recent activity</p>
+      </div>
+    </section>
+  </main>
+  
+  <!-- Footer Navigation -->
+  <footer class="footer-nav">
+    <nav class="nav-container">
+      <button class="nav-item active" data-section="dashboard">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+        </svg>
+        <span>Home</span>
+      </button>
+      
+      <button class="nav-item" data-section="courses">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 3L1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09V17h2V9L12 3zm6.82 6L12 12.72 5.18 9 12 5.28 18.82 9zM17 15.99l-5 2.73-5-2.73v-3.72L12 15l5-2.73v3.72z"/>
+        </svg>
+        <span>Courses</span>
+      </button>
+      
+      <button class="nav-item" data-section="chat">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
+        </svg>
+        <span>Chat</span>
+      </button>
+      
+      <button class="nav-item" data-section="profile">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+        </svg>
+        <span>Profile</span>
+      </button>
+    </nav>
+  </footer>
+  
+  <!-- Service Worker Registration & PWA Logic -->
+  <script>
+    /**
+     * EduReach PWA Initialization
+     * Handles service worker registration and install prompts
+     */
+    
+    // App State
+    let deferredPrompt = null;
+    const installBanner = document.getElementById('installBanner');
+    const installButton = document.getElementById('installButton');
+    const statusIndicator = document.getElementById('statusIndicator');
+    const statusText = document.getElementById('statusText');
+    
+    /**
+     * Service Worker Registration
+     * Critical for offline functionality
+     */
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', async () => {
+        try {
+          const registration = await navigator.serviceWorker.register('/service-worker.js', {
+            scope: '/'
+          });
+          
+          console.log('[App] Service Worker registered:', registration.scope);
+          
+          // Handle updates
+          registration.addEventListener('updatefound', () => {
+            const newWorker = registration.installing;
+            console.log('[App] New service worker found');
+            
+            newWorker.addEventListener('statechange', () => {
+              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                console.log('[App] New version available');
+                // Optionally show update notification to user
+                showUpdateNotification();
+              }
+            });
+          });
+          
+        } catch (error) {
+          console.error('[App] Service Worker registration failed:', error);
+        }
+      });
+    } else {
+      console.warn('[App] Service Workers not supported');
+    }
+    
+    /**
+     * Install Prompt Handler
+     * Captures and shows custom install UI
+     */
+    window.addEventListener('beforeinstallprompt', (event) => {
+      console.log('[App] beforeinstallprompt fired');
+      
+      // Prevent default mini-infobar
+      event.preventDefault();
+      
+      // Store for later use
+      deferredPrompt = event;
+      
+      // Show custom install banner
+      installBanner.classList.add('show');
+    });
+    
+    /**
+     * Install Button Click Handler
+     */
+    installButton.addEventListener('click', async () => {
+      if (!deferredPrompt) {
+        console.log('[App] No deferred prompt available');
+        return;
+      }
+      
+      // Hide banner
+      installBanner.classList.remove('show');
+      
+      // Show install prompt
+      deferredPrompt.prompt();
+      
+      // Wait for user response
+      const { outcome } = await deferredPrompt.userChoice;
+      console.log(`[App] User response to install: ${outcome}`);
+      
+      // Clear prompt
+      deferredPrompt = null;
+    });
+    
+    /**
+     * App Installed Handler
+     */
+    window.addEventListener('appinstalled', () => {
+      console.log('[App] PWA installed successfully');
+      deferredPrompt = null;
+      installBanner.classList.remove('show');
+      
+      // Track installation (when Member 2 implements analytics)
+      // trackEvent('pwa_installed');
+    });
+    
+    /**
+     * Network Status Monitoring
+     * Updates UI based on connectivity
+     */
+    function updateConnectionStatus() {
+      const isOnline = navigator.onLine;
+      
+      if (isOnline) {
+        statusIndicator.classList.add('online');
+        statusText.textContent = 'Online';
+      } else {
+        statusIndicator.classList.remove('online');
+        statusText.textContent = 'Offline';
+      }
+      
+      console.log(`[App] Connection status: ${isOnline ? 'online' : 'offline'}`);
+    }
+    
+    // Initial status check
+    updateConnectionStatus();
+    
+    // Listen for status changes
+    window.addEventListener('online', updateConnectionStatus);
+    window.addEventListener('offline', updateConnectionStatus);
+    
+    /**
+     * Navigation Handler
+     * Basic routing for single-page app
+     */
+    const navItems = document.querySelectorAll('.nav-item');
+    
+    navItems.forEach(item => {
+      item.addEventListener('click', (e) => {
+        const section = e.currentTarget.getAttribute('data-section');
+        
+        // Update active state
+        navItems.forEach(nav => nav.classList.remove('active'));
+        e.currentTarget.classList.add('active');
+        
+        // Route to section (Member 1 will expand this later)
+        console.log(`[App] Navigating to: ${section}`);
+        
+        // Placeholder for router logic
+        // loadSection(section);
+      });
+    });
+    
+    /**
+     * Update Notification (Optional)
+     * Shows when new version is available
+     */
+    function showUpdateNotification() {
+      // Simple implementation - can be enhanced with a modal/toast
+      const shouldReload = confirm('New version available! Reload to update?');
+      if (shouldReload) {
+        window.location.reload();
+      }
+    }
+    
+    /**
+     * Performance Monitoring
+     * Log key metrics for optimization
+     */
+    window.addEventListener('load', () => {
+      if ('performance' in window) {
+        const perfData = performance.getEntriesByType('navigation')[0];
+        console.log('[App] Load Performance:', {
+          loadTime: perfData.loadEventEnd - perfData.fetchStart,
+          domInteractive: perfData.domInteractive - perfData.fetchStart,
+          domComplete: perfData.domComplete - perfData.fetchStart
+        });
+      }
+    });
+    
+    /**
+     * Memory Monitoring (Low-end device optimization)
+     * Warn if memory pressure detected
+     */
+    if ('memory' in performance) {
+      setInterval(() => {
+        const memory = performance.memory;
+        const usagePercent = (memory.usedJSHeapSize / memory.jsHeapSizeLimit) * 100;
+        
+        if (usagePercent > 90) {
+          console.warn('[App] High memory usage detected:', usagePercent.toFixed(2) + '%');
+          // Trigger garbage collection or cache cleanup if needed
+        }
+      }, 30000); // Check every 30 seconds
+    }
+    
+  </script>
+  
+</body>
+</html>
