@@ -14,7 +14,8 @@ const SHELL_ASSETS = [
   '/manifest.json',
   '/assets/css/main.css',
   '/assets/js/app.js',
-  '/assets/js/db.js',  // ← ADD THIS LINE
+  '/assets/js/db.js',  
+  '/assets/js/router.js',
   '/assets/icons/icon-192x192.png',
   '/assets/icons/icon-512x512.png'
 ];
