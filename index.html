@@ -205,6 +205,51 @@
       color: var(--primary-dark);
     }
 
+    /* Charts Container - NEW */
+    .charts-container {
+      margin-top: var(--spacing-xl);
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--spacing-lg);
+    }
+
+    @media (min-width: 768px) {
+      .charts-container {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .charts-container {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    .chart-card {
+      background-color: white;
+      padding: var(--spacing-lg);
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .chart-title {
+      font-size: var(--font-large);
+      font-weight: 600;
+      margin-bottom: var(--spacing-md);
+      color: var(--primary-dark);
+      text-align: center;
+    }
+
+    .chart-wrapper {
+      position: relative;
+      height: 250px;
+      width: 100%;
+    }
+
+    .chart-wrapper canvas {
+      max-height: 250px;
+    }
+
     /* Courses Styles */
     .courses-list {
       background-color: white;
@@ -497,11 +542,40 @@
   <!-- Main Content -->
   <main class="main-content">
     
-    <!-- Dashboard Page -->
+    <!-- Dashboard Page - UPDATED WITH CHARTS -->
     <section id="dashboard-section" class="page-section active">
       <h2 class="page-title">Dashboard</h2>
       <div id="dashboard-content">
         <p class="loading-text">Loading dashboard...</p>
+      </div>
+      
+      <!-- Charts Section -->
+      <div id="dashboard-charts" class="charts-container" style="display: none;">
+        
+        <!-- Course Completion Chart -->
+        <div class="chart-card">
+          <h3 class="chart-title">📚 Course Progress</h3>
+          <div class="chart-wrapper">
+            <canvas id="courseProgressChart"></canvas>
+          </div>
+        </div>
+        
+        <!-- Weekly Activity Chart -->
+        <div class="chart-card">
+          <h3 class="chart-title">📊 Weekly Activity</h3>
+          <div class="chart-wrapper">
+            <canvas id="weeklyActivityChart"></canvas>
+          </div>
+        </div>
+        
+        <!-- Quiz Performance Chart -->
+        <div class="chart-card">
+          <h3 class="chart-title">✅ Quiz Scores</h3>
+          <div class="chart-wrapper">
+            <canvas id="quizScoresChart"></canvas>
+          </div>
+        </div>
+        
       </div>
     </section>
     
@@ -564,11 +638,17 @@
     </nav>
   </footer>
 
+  <!-- Chart.js Library -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
   <!-- IndexedDB Module -->
   <script src="/assets/js/db.js"></script>
   
   <!-- Router Module -->
   <script src="/assets/js/router.js"></script>
+  
+  <!-- Charts Module -->
+  <script src="/assets/js/charts.js"></script>
   
   <!-- Service Worker Registration & PWA Logic -->
   <script>

@@ -4,7 +4,7 @@
  * Optimized for 1GB RAM devices
  */
 
-const CACHE_VERSION = 'edureach-v1.0.0';
+const CACHE_VERSION = 'edureach-v1.1.0';
 const CACHE_NAME = `edureach-shell-${CACHE_VERSION}`;
 
 // App Shell - Critical resources that MUST be cached
@@ -14,10 +14,12 @@ const SHELL_ASSETS = [
   '/manifest.json',
   '/assets/css/main.css',
   '/assets/js/app.js',
-  '/assets/js/db.js',  
+  '/assets/js/db.js',
   '/assets/js/router.js',
+  '/assets/js/charts.js',  // ← ADD THIS LINE
   '/assets/icons/icon-192x192.png',
-  '/assets/icons/icon-512x512.png'
+  '/assets/icons/icon-512x512.png',
+  'https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js'
 ];
 
 // Runtime cache configuration

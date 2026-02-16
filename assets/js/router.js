@@ -233,6 +233,12 @@ async function loadDashboardData() {
         <p class="placeholder-text">Continue where you left off...</p>
       </div>
     `;
+    
+    // Initialize charts after stats are loaded
+    if (typeof EduReachCharts !== 'undefined') {
+      await EduReachCharts.init();
+    }
+    
   } catch (error) {
     console.error('[Router] Failed to load dashboard data:', error);
     dashboardContent.innerHTML = `

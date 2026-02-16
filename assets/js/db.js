@@ -308,27 +308,61 @@ async function getProgress(courseId) {
 async function getDBStats() {
   return new Promise(async (resolve, reject) => {
     try {
+      // Wait for database to be initialized
+      if (!db) {
+        console.warn('[DB] Database not initialized, waiting...');
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      }
+      
+      // Check again after waiting
+      if (!db) {
+        console.error('[DB] Database still not initialized');
+        resolve({
+          chatLogs: 0,
+          quizzes: 0,
+          courses: 0,
+          userProgress: 0,
+          offlineQueue: 0
+        });
+        return;
+      }
+      
       const stats = {};
       
       for (const storeName of Object.values(STORES)) {
-        const transaction = db.transaction([storeName], 'readonly');
-        const store = transaction.objectStore(storeName);
-        const countRequest = store.count();
-        
-        await new Promise((res, rej) => {
-          countRequest.onsuccess = () => {
-            stats[storeName] = countRequest.result;
-            res();
-          };
-          countRequest.onerror = () => rej(countRequest.error);
-        });
+        try {
+          const transaction = db.transaction([storeName], 'readonly');
+          const store = transaction.objectStore(storeName);
+          const countRequest = store.count();
+          
+          await new Promise((res, rej) => {
+            countRequest.onsuccess = () => {
+              stats[storeName] = countRequest.result;
+              res();
+            };
+            countRequest.onerror = () => {
+              stats[storeName] = 0;
+              res(); // Don't reject, just use 0
+            };
+          });
+        } catch (error) {
+          console.warn(`[DB] Failed to count ${storeName}:`, error);
+          stats[storeName] = 0;
+        }
       }
       
       console.log('[DB] Database statistics:', stats);
       resolve(stats);
     } catch (error) {
       console.error('[DB] Failed to get statistics:', error);
-      reject(error);
+      // Return empty stats instead of rejecting
+      resolve({
+        chatLogs: 0,
+        quizzes: 0,
+        courses: 0,
+        userProgress: 0,
+        offlineQueue: 0
+      });
     }
   });
 }
