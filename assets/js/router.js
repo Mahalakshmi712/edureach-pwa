@@ -234,11 +234,12 @@ async function loadDashboardData() {
       </div>
     `;
     
-    // Initialize charts after stats are loaded
-    if (typeof EduReachCharts !== 'undefined') {
-      await EduReachCharts.init();
-    }
-    
+   // Initialize charts after stats are loaded
+if (typeof EduReachCharts !== 'undefined') {
+  setTimeout(async () => {
+    await EduReachCharts.init();
+  }, 500);
+}
   } catch (error) {
     console.error('[Router] Failed to load dashboard data:', error);
     dashboardContent.innerHTML = `
